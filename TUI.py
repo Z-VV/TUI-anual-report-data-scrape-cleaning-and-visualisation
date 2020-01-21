@@ -1,13 +1,10 @@
-import bs4 as bs
+
 from bs4 import BeautifulSoup as soup
-import sys
-import time
 import urllib.request
 from PyQt5.QtWebEngineWidgets import QWebEnginePage
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QUrl
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -79,39 +76,48 @@ def creating_clean_dataframe(header,lines):
 
     return data
 
-def autolabel(rects):
+def autolabel(rects,point):
     for rect in rects:
         height = rect.get_height()
-        ax.annotate('{}'.format(height),
+        ax[1].annotate('{}'.format(height),
                     xy=(rect.get_x() + rect.get_width() / 2, height),
-                    xytext=(0, 7),  # 3 points vertical offset
+                    xytext=(point, 0),  #  points vertical offset
                     textcoords="offset points",
                     ha='center', va='bottom')
 
 def data_visualisation(data):
     global ax
+    labels1 = []
     labels = data.iloc[:,0]
     Q1_2018 = data.iloc[:,1]
     Q1_2019 = data.iloc[:,2]
+    var = data.iloc[:,3]
+    var = var.nlargest(4)
+    for x in range(len(var)):
+        labels1.append(data.business.loc[var.index[x]])
 
     x = np.arange(len(labels))
-    width = 0.38
+    width = 0.3
+    fig, ax = plt.subplots(1,2,figsize=(15,15))
 
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width / 2, Q1_2018, width, label=data.columns[1])
-    rects2 = ax.bar(x + width / 2, Q1_2019, width, label=data.columns[2])
+    rects1 = ax[1].bar(x - width / 2, Q1_2018, width, label=data.columns[1])
+    rects2 = ax[1].bar(x + width / 2, Q1_2019, width, label=data.columns[2])
+    plt.plot()
 
-    ax.set_ylabel('€ million')
-    ax.set_title('TURNOVER')
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.legend()
-    autolabel(rects1)
-    autolabel(rects2)
+    ax[1].set_ylabel('€ million')
+    ax[1].set_title('TURNOVER')
+    ax[1].set_xticks(x)
+    ax[1].set_xticklabels(labels)
+    ax[1].legend()
+    autolabel(rects1,0)
+    autolabel(rects2,18)
     fig.tight_layout()
     fig.autofmt_xdate()
-    plt.show()
 
+    ax[0].pie(var, startangle=90, autopct='%1.1f%%')
+    ax[0].legend(labels1, loc='lower left')
+    ax[0].set_title('Var. %')
+    plt.show()
 
 def main():
     page_list = links()
@@ -122,13 +128,4 @@ def main():
         data_visualisation(data)
 
 main()
-
-
-
-
-
-
-
-
-
 
