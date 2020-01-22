@@ -1,10 +1,13 @@
-
+import bs4 as bs
 from bs4 import BeautifulSoup as soup
+import sys
+import time
 import urllib.request
 from PyQt5.QtWebEngineWidgets import QWebEnginePage
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QUrl
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -85,7 +88,7 @@ def autolabel(rects,point):
                     textcoords="offset points",
                     ha='center', va='bottom')
 
-def data_visualisation(data):
+def data_visualisation(data,header):
     global ax
     labels1 = []
     labels = data.iloc[:,0]
@@ -93,6 +96,8 @@ def data_visualisation(data):
     Q1_2019 = data.iloc[:,2]
     var = data.iloc[:,3]
     var = var.nlargest(4)
+    Q = header[0].text.split(' ')
+    Q = Q[0]
     for x in range(len(var)):
         labels1.append(data.business.loc[var.index[x]])
 
@@ -116,7 +121,7 @@ def data_visualisation(data):
 
     ax[0].pie(var, startangle=90, autopct='%1.1f%%')
     ax[0].legend(labels1, loc='lower left')
-    ax[0].set_title('Var. %')
+    ax[0].set_title('Top 4 by growth for '+Q+' in %')
     plt.show()
 
 def main():
@@ -125,7 +130,9 @@ def main():
         article = scrape(x)
         header,lines = collecting_data_from_tables(article)
         data = creating_clean_dataframe(header,lines)
-        data_visualisation(data)
+        data_visualisation(data,header)
 
 main()
+
+
 
