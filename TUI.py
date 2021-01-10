@@ -1,13 +1,10 @@
-import bs4 as bs
 from bs4 import BeautifulSoup as soup
 import sys
-import time
 import urllib.request
 from PyQt5.QtWebEngineWidgets import QWebEnginePage
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QUrl
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
